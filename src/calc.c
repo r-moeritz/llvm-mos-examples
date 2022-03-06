@@ -13,7 +13,7 @@
 #include <stdlib.h>
 
 // constants
-const int BUF_SZ = 100;
+const char BUF_SZ = 100;
 
 // global variables
 char *buf;
