@@ -6,21 +6,21 @@
   - reverse and ustoa adapted from https://www.geeksforgeeks.org/implement-itoa
 */
 
+#include "types.h"
 #include <stdio.h>
 
 // Write str to stdout without appending a newline
-void printStr(const char* s) {
-  const char* sc = s;
-  while (*sc) {
-    __putchar(*sc++);
+void printStr(const ASCIIZ s) {
+  while (*s) {
+    __putchar(*s++);
   }
 }
 
-// Reverse [str, str+length-1] in-place
-void reverse(char* str, unsigned short length) {
-  unsigned short start = 0;
-  unsigned short end = length -1;
-  char temp;
+// Reverse [str, str+length) in-place
+void reverse(ASCIIZ str, BYTE length) {
+  BYTE start = 0;
+  BYTE end = length -1;
+  BYTE temp;
 
   while (start < end) {
     temp = *(str+start);
@@ -33,8 +33,8 @@ void reverse(char* str, unsigned short length) {
 }
 
 // itoa adapted for unsigned short
-char* ustoa(unsigned short num, char* str, char base) {
-  unsigned short i = 0;
+char* ustoa(WORD num, ASCIIZ str, BYTE base) {
+  BYTE i = 0;
 
   // Handle 0 explicitly, otherwise empty string is printed for 0
   if (num == 0) {
@@ -45,7 +45,7 @@ char* ustoa(unsigned short num, char* str, char base) {
 
   // Process individual digits
   while (num != 0) {
-    int rem = num % base;
+    BYTE rem = num % base;
     str[i++] = (rem > 9)? (rem-10) + 'a' : rem + '0';
     num = num/base;
   }

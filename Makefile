@@ -2,29 +2,34 @@
 SRCDIR := src
 OBJDIR := build
 SRC := $(wildcard $(SRCDIR)/*.c)
+CALC_SIM_PRG := $(OBJDIR)/calc-sim.prg
+CALC_C64_PRG := $(OBJDIR)/calc-c64.prg
 
 # Commands
-MKPRG = mos-sim-clang -Os -o $@ -Iinclude
+MKPRG_SIM = mos-sim-clang -Os -o $@ -Iinclude
+MKPRG_C64 = mos-c64-clang -Os -o $@ -Iinclude
 RM := rm -rf
 MKDIR := mkdir -p
 
-# Rules
-$(OBJDIR)/calc.prg: $(SRCDIR)/calc.c $(SRCDIR)/util.c
-	$(MKPRG) $(SRCDIR)/calc.c $(SRCDIR)/util.c
-
 # Targets
-.PHONY: all run-calc-sim c64 run-calc-vice clean
+.PHONY: all calc-sim calc-c64 run-calc-sim run-calc-vice clean
 
-all: $(OBJDIR)/calc.prg
+all: $(CALC_SIM_PRG) $(CALC_C64_PRG)
 
-run-calc-sim: $(OBJDIR)/calc.prg
-	mos-sim $(OBJDIR)/calc.prg
+$(CALC_SIM_PRG): $(SRCDIR)/calc.c $(SRCDIR)/util.c
+	$(MKPRG_SIM) $(SRCDIR)/calc.c $(SRCDIR)/util.c
 
-c64: MKPRG = mos-c64-clang -Os -o $@ -Iinclude
-c64: $(OBJDIR)/calc.prg
+$(CALC_C64_PRG): $(SRCDIR)/calc.c $(SRCDIR)/util.c
+	$(MKPRG_C64) $(SRCDIR)/calc.c $(SRCDIR)/util.c
 
-run-calc-vice: c64
-	x64sc $(OBJDIR)/calc.prg
+calc-sim: $(CALC_SIM_PRG)
+calc-c64: $(CALC_C64_PRG)
+
+run-calc-sim: $(CALC_SIM_PRG)
+	mos-sim $(CALC_SIM_PRG)
+
+run-calc-vice: $(CALC_C64_PRG)
+	x64sc $(CALC_C64_PRG)
 
 $(SRC): | $(OBJDIR)
 

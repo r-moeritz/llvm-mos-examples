@@ -9,17 +9,21 @@ following:
 
 ## Building
 
-### Compile for llvm-mos 6502 simulator
+### Compile for all targets
 
     make
+    
+### Compile for llvm-mos 6502 simulator
 
-### Compile for and start llvm-mos 6502 simulator
-
-    make run-calc-sim
-
+    make calc-sim
+    
 ### Compile for C64
 
-    make c64
+    make calc-c64
+
+### Compile for and launch llvm-mos 6502 simulator
+
+    make run-calc-sim
 
 ### Compile for C64 and launch VICE emulator
 

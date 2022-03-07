@@ -11,77 +11,93 @@
 #include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // constants
-const char BUF_SZ = 100;
+const BYTE BUF_SZ = 0x80;
 
 // global variables
-char *buf;
+static ASCIIZ buf;
 
 // function prototypes
-unsigned short parseNumber();
-unsigned short parseFormulae();
-unsigned short parseProduct();
-unsigned short parseFactor();
+WORD parseNumber();
+WORD parseFormulae();
+WORD parseProduct();
+WORD parseFactor();
 void readInput();
+void printResult(WORD result);
 
 // program entry point
 int main() {
-  unsigned short result;
-  buf = malloc(sizeof(char) * BUF_SZ);
+  WORD result;
+  buf = malloc(BUF_SZ);
 
   for (;;) {
     printStr("CALC> ");
     readInput();
 
     result = parseFormulae();
-    ustoa(result, buf, 10);
 
-    puts(buf);
+    printResult(result);
   }
 
   return 0;
 }
 
-void readInput() {
-  for (char i = 0; i != BUF_SZ; ++i) {
-    buf[i] = getchar();
-    if (buf[i] == '\n') {
-      break;
-    }
-  }
+void printResult(WORD result) {
+  ustoa(result, buf, 10);
+  puts(buf);
 }
 
-unsigned short parseFormulae() {
-  unsigned short left = parseProduct();
+void readInput() {
+  char c;
+  BYTE i = 0;
+
+  // read from stdin until newline or buffer full, skipping whitespace
+  do {
+    c = getchar();
+
+    if (c == '\n') break;
+
+    if (c != ' ' && c != '\0') {
+      buf[i++] = c;
+    }
+  }
+  while (i != BUF_SZ-1);
+
+  buf[i] = '\0';
+}
+
+WORD parseFormulae() {
+  WORD left = parseProduct();
 
   while (*buf == '+') {
     ++buf;
-    unsigned short right = parseProduct();
+    WORD right = parseProduct();
     left = left + right;
   }
 
   while (*buf == '-') {
     ++buf;
-    unsigned short right = parseProduct();
+    WORD right = parseProduct();
     left = left - right;
   }
 
   return left;
 }
 
-unsigned short parseProduct() {
-  unsigned short left = parseFactor();
+WORD parseProduct() {
+  WORD left = parseFactor();
 
   while (*buf == '*') {
     ++buf;
-    unsigned short right = parseFactor();
+    WORD right = parseFactor();
     left = left * right;
   }
 
   while (*buf == '/') {
     ++buf;
-    unsigned short right = parseFactor();
+    WORD right = parseFactor();
     if(right == 0) {
       puts("CANNOT DIVIDE BY ZERO");
       return left;
@@ -92,8 +108,8 @@ unsigned short parseProduct() {
   return left;
 }
 
-unsigned short parseNumber() {
-  unsigned short number = 0;
+WORD parseNumber() {
+  WORD number = 0;
 
   while(*buf >= '0' && *buf <= '9') {
     number = number * 10;
@@ -104,18 +120,20 @@ unsigned short parseNumber() {
   return number;
 }
 
-unsigned short parseFactor() {
+WORD parseFactor() {
   if (*buf >= '0' && *buf <= '9')
     return parseNumber();
 
   if (*buf == '(') {
     ++buf; // except '('
-    unsigned short sum = parseFormulae();
+    WORD sum = parseFormulae();
     ++buf; // except ')'
     return sum;
   }
 
-  printStr("EXPECTED DIGIT BUT FOUND ");
-  puts(buf);
-  return *buf;
+  printStr("EXPECTED DIGIT BUT FOUND '");
+  printStr(buf);
+  puts("'");
+
+  return 0;
 }
