@@ -10,6 +10,6 @@ void printStr(const ASCIIZ str);
 void reverse(ASCIIZ str, BYTE length);
 
 // itoa adapted for unsigned short
-char* ustoa(WORD num, ASCIIZ str, BYTE base);
+ASCIIZ ustoa(WORD num, ASCIIZ str, BYTE base);
 
 #endif // #ifndef UTIL__H

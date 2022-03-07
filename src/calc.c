@@ -11,7 +11,6 @@
 #include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 // constants
 const BYTE BUF_SZ = 0x80;

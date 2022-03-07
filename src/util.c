@@ -10,16 +10,16 @@
 #include <stdio.h>
 
 // Write str to stdout without appending a newline
-void printStr(const ASCIIZ s) {
-  while (*s) {
-    __putchar(*s++);
+void printStr(const ASCIIZ str) {
+  while (*str) {
+    __putchar(*str++);
   }
 }
 
 // Reverse [str, str+length) in-place
 void reverse(ASCIIZ str, BYTE length) {
   BYTE start = 0;
-  BYTE end = length -1;
+  BYTE end = length - 1;
   BYTE temp;
 
   while (start < end) {
@@ -27,8 +27,8 @@ void reverse(ASCIIZ str, BYTE length) {
     *(str+start) = *(str+end);
     *(str+end) = temp;
 
-    start++;
-    end--;
+    ++start;
+    --end;
   }
 }
 
@@ -47,7 +47,7 @@ char* ustoa(WORD num, ASCIIZ str, BYTE base) {
   while (num != 0) {
     BYTE rem = num % base;
     str[i++] = (rem > 9)? (rem-10) + 'a' : rem + '0';
-    num = num/base;
+    num = num / base;
   }
 
   str[i] = '\0'; // Append string terminator
