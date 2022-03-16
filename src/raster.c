@@ -1,31 +1,21 @@
 #include "types.h"
 
 // memory locations
-#define VIC 0xd000
-#define NEWVIC1 0xc100
-#define NEWVIC2 0xc12f
-#define CIA1ICR 0xdc0d
-#define CIA2ICR 0xdd0d
-#define SCROLY 0xd011
-#define VICIRQ 0xd019
-#define IRQMSK 0xd01a
-#define RASTER 0xd012
-#define BORDER 0xd020
-#define IRQVEC 0x314
+const WORD VIC = 0xd000;
+const WORD NEWVIC1 = 0xc100;
+const WORD NEWVIC2 = 0xc12f;
+const WORD CIA1ICR = 0xdc0d;
+const WORD CIA2ICR = 0xdd0d;
+const WORD SCROLY = 0xd011;
+const WORD VICIRQ = 0xd019;
+const WORD IRQMSK = 0xd01a;
+const WORD RASTER = 0xd012;
+const WORD BORDER = 0xd020;
+const WORD IRQVEC = 0x314;
 
 // values
-#define GRAY3 15
-#define GREEN 5
-
-// global variables
-static PTR irqmsk = IRQMSK;
-static PTR vicirq = VICIRQ;
-static PTR raster = RASTER;
-static PTR cia1icr = CIA1ICR;
-static PTR cia2icr = CIA2ICR;
-static PTR irqvec = IRQVEC;
-static PTR scroly = SCROLY;
-static PTR border = BORDER;
+const BYTE GRAY3 = 15;
+const BYTE GREEN = 5;
 
 // function prototypes
 void disableAllInterrupts();
@@ -39,41 +29,50 @@ int main() {
   copyVicRegisters();
   setupInterrupts();
   asm ( "cli" );
+
+  return 0;
 }
 
 void disableAllInterrupts() {
+  PTR cia1icr = CIA1ICR;
+  PTR cia2icr = CIA2ICR;
+  PTR irqmsk = IRQMSK;
+  PTR vicirq = VICIRQ;
+
   *cia1icr = 0x7f;
   *cia2icr = 0x7f;
   *irqmsk = 0;
   *vicirq = 0;
 
-  asm ( "lda %0\n\t"
-        "lda %1\n\t"
-        "lda %2\n\t"
-        : // no outputs
-        : "m" (vicirq), "m" (cia1icr), "m" (cia2icr) // inputs
-        : "a" // clobbers
-        );
+  asm ( "lda $d019\n\t"
+        "lda $dc0d\n\t"
+        "lda $dd0d" );
 }
 
 void copyVicRegisters() {
-  BYTE offset = 0x2e;
-  PTR vic = VIC + offset;
-  PTR newvic1 = NEWVIC1 + offset;
-  PTR newvic2 = NEWVIC2 + offset;
+  PTR vic = VIC + 0x2e;
+  PTR newvic1 = NEWVIC1 + 0x2e;
+  PTR newvic2 = NEWVIC2 + 0x2e;
 
   while (vic >= VIC) {
-    *newvic1-- = *vic;
-    *newvic2-- = *vic--;
+    *newvic1 = *vic;
+    --newvic1;
+    *newvic2 = *vic;
+    --newvic2;
+    --vic;
   }
 }
 
 void setupInterrupts() {
-  *irqvec++ = (WORD)&handleInterrupt & (WORD)0xff;
-  *irqvec = (WORD)&handleInterrupt >> (WORD)8;
-
+  PTR vicirq = VICIRQ;
+  PTR irqmsk = IRQMSK;
+  PTR raster = RASTER;
+  PTR scroly = SCROLY;
   PTR newvic1 = NEWVIC1 + 0x11;
   PTR newvic2 = NEWVIC2 + 0x11;
+  WPTR irqvec = IRQVEC;
+
+  *irqvec = &handleInterrupt;
 
   *scroly &= 0x7f;
   *newvic1 = *scroly;
@@ -104,6 +103,9 @@ void setupInterrupts() {
 }
 
 void handleInterrupt() {
+  PTR raster = RASTER;
+  PTR border = BORDER;
+
   BYTE vicOffset = 0;
   BYTE newvicOffset = 0x2e + 47;
 
