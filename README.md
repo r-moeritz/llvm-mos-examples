@@ -13,20 +13,28 @@ following:
 ### Compile for all targets
 
     make
-    
-### Compile for llvm-mos 6502 simulator
+
+### Compile raster IRQ example for C64
+
+    make raster-c64
+
+### Compile raster IRQ example for C64 and launch in VICE emulator
+
+    make run-raster-vice
+
+### Compile calculator example for 6502 simulator
 
     make calc-sim
     
-### Compile for C64
+### Compile calculator example for C64
 
     make calc-c64
 
-### Compile for and launch llvm-mos 6502 simulator
+### Compile calculator for 6502 and launch simulator
 
     make run-calc-sim
 
-### Compile for C64 and launch VICE emulator
+### Compile calculator for C64 and launch VICE emulator
 
     make run-calc-vice
 
