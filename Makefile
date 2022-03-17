@@ -23,8 +23,8 @@ $(CALC_SIM_PRG): $(SRCDIR)/calc.c $(SRCDIR)/util.c
 $(CALC_C64_PRG): $(SRCDIR)/calc.c $(SRCDIR)/util.c
 	$(MKPRG_C64) $(SRCDIR)/calc.c $(SRCDIR)/util.c
 
-$(RASTER_C64_PRG): $(SRCDIR)/raster.c
-	$(MKPRG_C64) $(SRCDIR)/raster.c
+$(RASTER_C64_PRG): $(SRCDIR)/raster-c64.c
+	$(MKPRG_C64) $(SRCDIR)/raster-c64.c
 
 calc-sim: $(CALC_SIM_PRG)
 calc-c64: $(CALC_C64_PRG)

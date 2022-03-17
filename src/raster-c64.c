@@ -1,3 +1,11 @@
+/*
+  raster-c64.c -- a basic raster IRQ demonstration for the Commodore 64
+
+  This is the most basic example of a raster interrupt handler that I could
+  think of. It is an adaptation of the example program "rasterzeilen-irq" from
+  the book "C64/C128 Alles über Maschinensprache" by Frank Riemenschneider.
+*/
+
 #include "types.h"
 
 // memory locations
