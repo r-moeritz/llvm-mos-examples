@@ -3,10 +3,10 @@ MOS 6502 platforms using
 [llvm-mos](https://github.com/llvm-mos/llvm-mos-sdk). Right now it contains the
 following:
 
-| Source       | Description                     |
-|--------------|---------------------------------|
-| src/calc.c   | A simple interactive calculator |
-| src/raster.c | A raster IRQ demo               |
+| Source           | Description                            |
+|------------------|----------------------------------------|
+| src/calc.c       | A simple interactive calculator        |
+| src/raster-c64.c | A raster IRQ demo for the Commodore 64 |
 
 ## Building
 
