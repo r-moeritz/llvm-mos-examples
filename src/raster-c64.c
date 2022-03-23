@@ -7,6 +7,7 @@
 */
 
 #include "types.h"
+#include "macros.h"
 
 // memory locations
 const WORD VIC = 0xd000;
@@ -24,42 +25,35 @@ const BYTE RTOP = 106;
 const BYTE RBOTTOM = 194;
 
 // function prototypes
-void handleInterrupt() __attribute__ ((noreturn));
+void handle_irq() __attribute__ ((noreturn));
 
 void main() {
-  asm ("sei");
+  sei ();
 
   WPTR irqvec = IRQVEC;
   PTR raster = RASTER;
   PTR scroly = SCROLY;
   PTR irqmsk = IRQMSK;
 
-  *irqvec = &handleInterrupt;
+  *irqvec = &handle_irq;
   *raster = RTOP;
   *scroly = *scroly & 0x7f;
   *irqmsk = 0x81;
 
-  asm ("cli");
+  cli ();
 }
 
-void handleInterrupt() {
-  BYTE irq;
+void handle_irq() {
   PTR raster = RASTER;
   PTR border = BORDER;
 
-  // read and acknowledge irq
-  asm("lda $d019\n\t"
-      "sta $d019"
-      : "=r" (irq) // output
-      : // no input
-      : "a" // clobbered registers
-      );
+  // read and acknowledge vic irq
+  BYTE irq;
+  ack_vic_irq (irq);
 
   if (irq <= 127) {
     // system interrupt
-    asm ("lda $dc0d\n\t"
-         "cli\n\t"
-         "jmp $ea31");
+    handle_sys_irq ();
   }
 
   // raster interrupt
@@ -72,5 +66,5 @@ void handleInterrupt() {
     *raster = RTOP;
   }
 
-  asm ("jmp $ea7e");
+  return_sys_irq ();
 }
