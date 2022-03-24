@@ -8,6 +8,7 @@
 
 #include "types.h"
 #include "macros.h"
+#include "c64/macros.h"
 
 // memory locations
 const WORD VIC = 0xd000;
@@ -51,7 +52,7 @@ void handle_irq() {
   BYTE irq;
   ack_vic_irq (irq);
 
-  if (irq <= 127) {
+  if (is_sys_irq (irq)) {
     // system interrupt
     handle_sys_irq ();
   }
