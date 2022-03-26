@@ -8,20 +8,10 @@
 
 #include "types.h"
 #include "macros.h"
-#include "c64/macros.h"
-
-// memory locations
-const WORD VIC = 0xd000;
-const WORD SCROLY = VIC + 0x11;
-const WORD VICIRQ = VIC + 0x19;
-const WORD IRQMSK = VIC + 0x1a;
-const WORD RASTER = VIC + 0x12;
-const WORD BORDER = VIC + 0x20;
-const WORD IRQVEC = 0x314;
+#include "c64/kernal.h"
+#include "c64/vic.h"
 
 // values
-const BYTE GRAY3 = 15;
-const BYTE GREEN = 5;
 const BYTE RTOP = 106;
 const BYTE RBOTTOM = 194;
 
@@ -31,14 +21,14 @@ void handle_irq() __attribute__ ((noreturn));
 void main() {
   sei ();
 
-  WPTR irqvec = IRQVEC;
+  WPTR irqvec = CINV;
   PTR raster = RASTER;
   PTR scroly = SCROLY;
   PTR irqmsk = IRQMSK;
 
   *irqvec = &handle_irq;
   *raster = RTOP;
-  *scroly = *scroly & 0x7f;
+  *scroly &= 0x7f;
   *irqmsk = 0x81;
 
   cli ();
@@ -63,7 +53,7 @@ void handle_irq() {
     *raster = RBOTTOM;
   }
   else {
-    *border = GRAY3;
+    *border = GRAY_3;
     *raster = RTOP;
   }
 
