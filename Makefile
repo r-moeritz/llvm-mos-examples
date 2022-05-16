@@ -6,9 +6,14 @@ CALC_SIM_PRG := $(OBJDIR)/calc-sim.prg
 CALC_C64_PRG := $(OBJDIR)/calc-c64.prg
 RASTER_C64_PRG := $(OBJDIR)/raster-c64.prg
 
+# Flags
+CXXFLAGS = -Wno-deprecated
+
 # Commands
-MKPRG_SIM = mos-sim-clang -Os -o $@ -Iinclude
-MKPRG_C64 = mos-c64-clang -Os -o $@ -Iinclude
+CC_SIM = mos-sim-clang -Os -o $@ -Iinclude
+CC_C64 = mos-c64-clang -Os -o $@ -Iinclude
+CXX_SIM = mos-sim-clang++ $(CXXFLAGS) -Os -o $@ -Iinclude
+CXX_C64 = mos-c64-clang++ $(CXXFLAGS) -Os -o $@ -Iinclude
 RM := rm -rf
 MKDIR := mkdir -p
 
@@ -17,14 +22,14 @@ MKDIR := mkdir -p
 
 all: $(CALC_SIM_PRG) $(CALC_C64_PRG) $(RASTER_C64_PRG)
 
-$(CALC_SIM_PRG): $(SRCDIR)/calc.c $(SRCDIR)/util.c
-	$(MKPRG_SIM) $(SRCDIR)/calc.c $(SRCDIR)/util.c
+$(CALC_SIM_PRG): $(SRCDIR)/examples/calc.cc $(SRCDIR)/util.c
+	$(CXX_SIM) $(SRCDIR)/examples/calc.cc $(SRCDIR)/util.c
 
-$(CALC_C64_PRG): $(SRCDIR)/calc.c $(SRCDIR)/util.c
-	$(MKPRG_C64) $(SRCDIR)/calc.c $(SRCDIR)/util.c
+$(CALC_C64_PRG): $(SRCDIR)/examples/calc.cc $(SRCDIR)/util.c
+	$(CXX_C64) $(SRCDIR)/examples/calc.cc $(SRCDIR)/util.c
 
 $(RASTER_C64_PRG): $(SRCDIR)/raster-c64.c
-	$(MKPRG_C64) $(SRCDIR)/raster-c64.c
+	$(CC_C64) $(SRCDIR)/raster-c64.c
 
 calc-sim: $(CALC_SIM_PRG)
 calc-c64: $(CALC_C64_PRG)
