@@ -3,6 +3,10 @@
 
 #include "types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Write str to stdout without appending a newline
 void printStr(const ASCIIZ str);
 
@@ -11,5 +15,9 @@ void reverse(ASCIIZ str, BYTE length);
 
 // itoa adapted for unsigned short
 ASCIIZ ustoa(WORD num, ASCIIZ str, BYTE base);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // #ifndef UTIL__H

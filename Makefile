@@ -1,19 +1,25 @@
 # Paths
 SRCDIR := src
 OBJDIR := build
-SRC := $(wildcard $(SRCDIR)/*.c)
+SRC := $(wildcard $(SRCDIR)/examples/*.c ) $(wildcard $(SRCDIR)/examples/*.cc)
+UTIL_SIM_OBJ := $(OBJDIR)/util-sim.o
+UTIL_C64_OBJ := $(OBJDIR)/util-c64.o
+CALC_SIM_OBJ := $(OBJDIR)/calc-sim.o
+CALC_C64_OBJ := $(OBJDIR)/calc-c64.o
+RASTER_C64_OBJ := $(OBJDIR)/raster-c64.o
 CALC_SIM_PRG := $(OBJDIR)/calc-sim.prg
 CALC_C64_PRG := $(OBJDIR)/calc-c64.prg
 RASTER_C64_PRG := $(OBJDIR)/raster-c64.prg
 
 # Flags
-CXXFLAGS = -Wno-deprecated
+CFLAGS = -c -Os -Iinclude -o $@
+LDFLAGS = -Os -o $@
 
 # Commands
-CC_SIM = mos-sim-clang -Os -o $@ -Iinclude
-CC_C64 = mos-c64-clang -Os -o $@ -Iinclude
-CXX_SIM = mos-sim-clang++ $(CXXFLAGS) -Os -o $@ -Iinclude
-CXX_C64 = mos-c64-clang++ $(CXXFLAGS) -Os -o $@ -Iinclude
+CC_SIM = mos-sim-clang
+CC_C64 = mos-c64-clang
+CXX_SIM = mos-sim-clang++
+CXX_C64 = mos-c64-clang++
 RM := rm -rf
 MKDIR := mkdir -p
 
@@ -22,14 +28,31 @@ MKDIR := mkdir -p
 
 all: $(CALC_SIM_PRG) $(CALC_C64_PRG) $(RASTER_C64_PRG)
 
-$(CALC_SIM_PRG): $(SRCDIR)/examples/calc.cc $(SRCDIR)/util.c
-	$(CXX_SIM) $(SRCDIR)/examples/calc.cc $(SRCDIR)/util.c
+# Calculator
+$(CALC_SIM_PRG): $(CALC_SIM_OBJ) $(UTIL_SIM_OBJ)
+	$(CXX_SIM) $(LDFLAGS) $(CALC_SIM_OBJ) $(UTIL_SIM_OBJ)
 
-$(CALC_C64_PRG): $(SRCDIR)/examples/calc.cc $(SRCDIR)/util.c
-	$(CXX_C64) $(SRCDIR)/examples/calc.cc $(SRCDIR)/util.c
+$(CALC_SIM_OBJ): $(SRCDIR)/examples/calc.cc
+	$(CXX_SIM) $(CFLAGS) $(SRCDIR)/examples/calc.cc
 
-$(RASTER_C64_PRG): $(SRCDIR)/raster-c64.c
-	$(CC_C64) $(SRCDIR)/raster-c64.c
+$(UTIL_SIM_OBJ): $(SRCDIR)/util.c
+	$(CC_SIM) $(CFLAGS) $(SRCDIR)/util.c
+
+$(CALC_C64_PRG): $(CALC_C64_OBJ) $(UTIL_C64_OBJ)
+	$(CXX_C64) $(LDFLAGS) $(CALC_C64_OBJ) $(UTIL_C64_OBJ)
+
+$(CALC_C64_OBJ): $(SRCDIR)/examples/calc.cc
+	$(CXX_C64) $(CFLAGS) $(SRCDIR)/examples/calc.cc
+
+$(UTIL_C64_OBJ): $(SRCDIR)/util.c
+	$(CC_C64) $(CFLAGS) $(SRCDIR)/util.c
+
+# Raster
+$(RASTER_C64_PRG): $(RASTER_C64_OBJ)
+	$(CC_C64) $(LDFLAGS) $(RASTER_C64_OBJ)
+
+$(RASTER_C64_OBJ): $(SRCDIR)/examples/raster-c64.c
+	$(CC_C64) $(CFLAGS) $(SRCDIR)/examples/raster-c64.c
 
 calc-sim: $(CALC_SIM_PRG)
 calc-c64: $(CALC_C64_PRG)
